@@ -22,13 +22,15 @@ form.addEventListener("submit", (event) => {
   const vacationDays = readNumber("vacationDays");
   const sickDays = readNumber("sickDays");
   const hoursPerDay = readNumber("hoursPerDay", 8);
+  const leavePayPercent = readNumber("leavePayPercent", 100);
   const pensionValue = readNumber("pensionValue");
 
   const pensionType = document.querySelector('input[name="pensionType"]:checked')?.value || "percent";
 
   const leaveHours = (vacationDays + sickDays) * hoursPerDay;
-  const totalPaidHours = hoursWorked + leaveHours;
-  const grossPay = totalPaidHours * hourlyWage;
+  const workedPay = hoursWorked * hourlyWage;
+  const leavePay = leaveHours * hourlyWage * (leavePayPercent / 100);
+  const grossPay = workedPay + leavePay;
 
   let pensionDeduction = 0;
   if (pensionType === "percent") {
@@ -43,7 +45,9 @@ form.addEventListener("submit", (event) => {
     <table>
       <tr><td>Worked Hours</td><td>${hoursWorked.toFixed(2)}</td></tr>
       <tr><td>Paid Leave Hours</td><td>${leaveHours.toFixed(2)}</td></tr>
-      <tr><td>Total Paid Hours</td><td>${totalPaidHours.toFixed(2)}</td></tr>
+      <tr><td>Leave Pay Rate</td><td>${leavePayPercent.toFixed(2)}%</td></tr>
+      <tr><td>Worked Pay</td><td>${money(workedPay)}</td></tr>
+      <tr><td>Leave Pay</td><td>${money(leavePay)}</td></tr>
       <tr><td>Gross Pay</td><td>${money(grossPay)}</td></tr>
       <tr><td>Pension Deduction</td><td>- ${money(pensionDeduction)}</td></tr>
       <tr><td>Net (before tax)</td><td>${money(netBeforeTax)}</td></tr>
