@@ -1,0 +1,30 @@
+{
+  "name": "paystub-calculator",
+  "version": "1.0.0",
+  "description": "A simple application for calculating paystubs including wages, vacation/sick days, and pension options.",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/paystub-calculator.git"
+  },
+  "keywords": [
+    "paystub",
+    "calculator",
+    "wage",
+    "pension"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^4.5.4",
+    "jest": "^27.0.6"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "ts-jest": "^27.0.3"
+  }
+}
