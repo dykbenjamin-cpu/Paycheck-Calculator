@@ -1,42 +1,51 @@
 const form = document.getElementById("payForm");
 const results = document.getElementById("results");
 
-function money(n) {
-  return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+function money(value) {
+  return value.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD"
+  });
 }
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+function readNumber(id, fallback = 0) {
+  const el = document.getElementById(id);
+  const val = Number(el?.value);
+  return Number.isFinite(val) ? val : fallback;
+}
 
-  const hourlyWage = Number(document.getElementById("hourlyWage").value || 0);
-  const hoursWorked = Number(document.getElementById("hoursWorked").value || 0);
-  const vacationDays = Number(document.getElementById("vacationDays").value || 0);
-  const sickDays = Number(document.getElementById("sickDays").value || 0);
-  const hoursPerDay = Number(document.getElementById("hoursPerDay").value || 8);
-  const pensionValue = Number(document.getElementById("pensionValue").value || 0);
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-  const pensionType = document.querySelector('input[name="pensionType"]:checked').value;
+  const hourlyWage = readNumber("hourlyWage");
+  const hoursWorked = readNumber("hoursWorked");
+  const vacationDays = readNumber("vacationDays");
+  const sickDays = readNumber("sickDays");
+  const hoursPerDay = readNumber("hoursPerDay", 8);
+  const pensionValue = readNumber("pensionValue");
+
+  const pensionType = document.querySelector('input[name="pensionType"]:checked')?.value || "percent";
 
   const leaveHours = (vacationDays + sickDays) * hoursPerDay;
-  const paidHours = hoursWorked + leaveHours;
-  const grossPay = paidHours * hourlyWage;
+  const totalPaidHours = hoursWorked + leaveHours;
+  const grossPay = totalPaidHours * hourlyWage;
 
-  let pension = 0;
+  let pensionDeduction = 0;
   if (pensionType === "percent") {
-    pension = grossPay * (pensionValue / 100);
+    pensionDeduction = grossPay * (pensionValue / 100);
   } else {
-    pension = hoursWorked * pensionValue; // per hour worked only
+    pensionDeduction = hoursWorked * pensionValue; // per hour actually worked
   }
 
-  const netBeforeTax = grossPay - pension;
+  const netBeforeTax = grossPay - pensionDeduction;
 
   results.innerHTML = `
     <table>
       <tr><td>Worked Hours</td><td>${hoursWorked.toFixed(2)}</td></tr>
       <tr><td>Paid Leave Hours</td><td>${leaveHours.toFixed(2)}</td></tr>
-      <tr><td>Total Paid Hours</td><td>${paidHours.toFixed(2)}</td></tr>
+      <tr><td>Total Paid Hours</td><td>${totalPaidHours.toFixed(2)}</td></tr>
       <tr><td>Gross Pay</td><td>${money(grossPay)}</td></tr>
-      <tr><td>Pension Deduction</td><td>- ${money(pension)}</td></tr>
+      <tr><td>Pension Deduction</td><td>- ${money(pensionDeduction)}</td></tr>
       <tr><td>Net (before tax)</td><td>${money(netBeforeTax)}</td></tr>
     </table>
   `;
