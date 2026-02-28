@@ -19,18 +19,17 @@ form.addEventListener("submit", (event) => {
 
   const hourlyWage = readNumber("hourlyWage");
   const hoursWorked = readNumber("hoursWorked");
-  const vacationDays = readNumber("vacationDays");
-  const sickDays = readNumber("sickDays");
-  const hoursPerDay = readNumber("hoursPerDay", 8);
-  const leavePayPercent = readNumber("leavePayPercent", 100);
+  const vacationPayPercent = readNumber("vacationPayPercent");
+  const sickPayPercent = readNumber("sickPayPercent");
   const pensionValue = readNumber("pensionValue");
 
-  const pensionType = document.querySelector('input[name="pensionType"]:checked')?.value || "percent";
+  const pensionType =
+    document.querySelector('input[name="pensionType"]:checked')?.value || "percent";
 
-  const leaveHours = (vacationDays + sickDays) * hoursPerDay;
   const workedPay = hoursWorked * hourlyWage;
-  const leavePay = leaveHours * hourlyWage * (leavePayPercent / 100);
-  const grossPay = workedPay + leavePay;
+  const vacationPay = workedPay * (vacationPayPercent / 100);
+  const sickPay = workedPay * (sickPayPercent / 100);
+  const grossPay = workedPay + vacationPay + sickPay;
 
   let pensionDeduction = 0;
   if (pensionType === "percent") {
@@ -44,10 +43,9 @@ form.addEventListener("submit", (event) => {
   results.innerHTML = `
     <table>
       <tr><td>Worked Hours</td><td>${hoursWorked.toFixed(2)}</td></tr>
-      <tr><td>Paid Leave Hours</td><td>${leaveHours.toFixed(2)}</td></tr>
-      <tr><td>Leave Pay Rate</td><td>${leavePayPercent.toFixed(2)}%</td></tr>
       <tr><td>Worked Pay</td><td>${money(workedPay)}</td></tr>
-      <tr><td>Leave Pay</td><td>${money(leavePay)}</td></tr>
+      <tr><td>Vacation Pay (${vacationPayPercent.toFixed(2)}%)</td><td>${money(vacationPay)}</td></tr>
+      <tr><td>Sick Pay (${sickPayPercent.toFixed(2)}%)</td><td>${money(sickPay)}</td></tr>
       <tr><td>Gross Pay</td><td>${money(grossPay)}</td></tr>
       <tr><td>Pension Deduction</td><td>- ${money(pensionDeduction)}</td></tr>
       <tr><td>Net (before tax)</td><td>${money(netBeforeTax)}</td></tr>
